@@ -4,7 +4,7 @@ tools:
   - id: "subdomain-enumerator"
     name: "Subdomain Enumeration Tool"
     description: "A tool to discover subdomains for a given root domain using brute-force and OSINT."
-    status: "In Development"
+    status: "In Testing"
     purpose:
       - "Discover hidden assets."
       - "Identify attack surface expansion."

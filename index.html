@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAI Project Progress Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 sm:p-8">
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg border border-gray-700">
+        
+        <!-- Header -->
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+            CAI Master Plan
+        </h1>
+        <p class="text-center text-gray-400 mb-8 text-sm sm:text-base">A visual blueprint for our autonomous bug bounty agent.</p>
+
+        <!-- Progress Section -->
+        <div class="mb-10">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-emerald-400">Project Progress</h2>
+            <div class="w-full bg-gray-700 rounded-full h-8 overflow-hidden relative">
+                <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-700 ease-out" style="width: 0%;"></div>
+                <div id="progressText" class="absolute inset-0 flex items-center justify-center font-bold text-gray-900 text-sm"></div>
+            </div>
+        </div>
+
+        <!-- Milestones Section -->
+        <div id="milestones">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-6 text-emerald-400">Milestones & Tools</h2>
+        </div>
+
+    </div>
+
+    <script>
+        // Use a function to contain the logic, ensuring everything is loaded properly.
+        window.onload = function() {
+            // URL to fetch data from your GitHub repository.
+            const githubYamlUrl = 'https://raw.githubusercontent.com/frostyfucker/mp2/main/tools.yml';
+
+            // Function to fetch YAML data from GitHub and render the dashboard.
+            async function fetchAndRenderDashboard() {
+                try {
+                    // Fetch the YAML data from the GitHub URL.
+                    const response = await fetch(githubYamlUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const yamlContent = await response.text();
+                    
+                    // Use js-yaml.loadAll to parse the YAML string into an array of JavaScript objects.
+                    const data = jsyaml.loadAll(yamlContent);
+
+                    // Grab the main dashboard elements
+                    const progressBar = document.getElementById('progressBar');
+                    const progressText = document.getElementById('progressText');
+                    const milestonesContainer = document.getElementById('milestones');
+                    
+                    // Clear previous content before re-rendering
+                    milestonesContainer.innerHTML = `<h2 class="text-xl sm:text-2xl font-semibold mb-6 text-emerald-400">Milestones & Tools</h2>`;
+
+
+                    // Calculate total and "in development" tools
+                    let totalTools = 0;
+                    let toolsCompleted = 0;
+                    let toolsInProgress = 0;
+                    let phases = {};
+
+                    // Iterate through the raw YAML data to find all tools and their statuses.
+                    data.forEach(document => {
+                        if (document && document.tools && document.phase) {
+                            
+                            document.tools.forEach(tool => {
+                                totalTools++;
+                                if (tool.status === "In Development" || tool.status === "In Testing") {
+                                    toolsInProgress++;
+                                }
+                                if (tool.status === "Complete") {
+                                    toolsCompleted++;
+                                }
+                            });
+                            // Store phases to render them later.
+                            phases[document.phase] = document.tools;
+                        }
+                    });
+                    
+                    // Calculate and update the progress bar
+                    const progressPercentage = totalTools > 0 ? Math.round(((toolsCompleted) / totalTools) * 100) : 0;
+                    progressBar.style.width = `${progressPercentage}%`;
+                    progressText.textContent = `${toolsCompleted} of ${totalTools} Tools Completed (${progressPercentage}%)`;
+
+                    // Render the phases and tools
+                    for (const phase in phases) {
+                        const phaseSection = document.createElement('div');
+                        phaseSection.className = 'mb-8';
+
+                        const phaseTitle = document.createElement('h3');
+                        phaseTitle.className = 'text-lg sm:text-xl font-bold mb-4 text-white border-b-2 border-gray-600 pb-2';
+                        phaseTitle.textContent = phase;
+                        phaseSection.appendChild(phaseTitle);
+
+                        phases[phase].forEach(tool => {
+                            // Create card for each tool
+                            const toolCard = document.createElement('div');
+                            let statusColor = '';
+                            let statusIcon = '';
+
+                            // Set colors and icons based on status.
+                            if (tool.status === 'In Development') {
+                                statusColor = 'bg-blue-600';
+                                statusIcon = '🛠️';
+                            } else if (tool.status === 'In Testing') {
+                                statusColor = 'bg-yellow-600';
+                                statusIcon = '🧪';
+                            } else if (tool.status === 'Complete') {
+                                statusColor = 'bg-green-600';
+                                statusIcon = '✅';
+                            } else if (tool.status === 'On Hold') {
+                                statusColor = 'bg-red-600';
+                                statusIcon = '⏸️';
+                            } else {
+                                statusColor = 'bg-gray-600';
+                                statusIcon = '📝';
+                            }
+
+                            toolCard.className = `bg-gray-700 p-4 rounded-lg mb-4 shadow-md`;
+                            toolCard.innerHTML = `
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-100">${tool.name}</h4>
+                                    <span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColor}">${statusIcon} ${tool.status}</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-2">${tool.description}</p>
+                                <p class="text-xs text-gray-500">ID: ${tool.id}</p>
+                            `;
+                            phaseSection.appendChild(toolCard);
+                        });
+
+                        milestonesContainer.appendChild(phaseSection);
+                    }
+                } catch (error) {
+                    // Display an error message with details if the YAML parsing or fetching fails.
+                    document.getElementById('milestones').innerHTML = `<p class="text-red-500">Error parsing project data. <br><br><b>Error:</b> ${error.message}</p>`;
+                    console.error("Fetching/Parsing Error:", error);
+                }
+            }
+
+            // Call the function to render the dashboard
+            fetchAndRenderDashboard();
+        };
+    </script>
+</body>
+</html>

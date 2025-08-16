@@ -1,471 +1,205 @@
-# tool_specs.yaml
-# A version-controlled blueprint for new tool development.
 ---
-# Phase I: Architectural Integration and Tool Development
+phase: "Phase I: Architectural Integration and Tool Development"
 tools:
-- id: "subdomain-enumerator"
-name: "Subdomain Enumeration Tool"
-description: "A tool to discover subdomains for a given root domain using brute-force and OSINT."
-status: "In Development"
-purpose:
-- "Discover hidden assets."
-- "Identify attack surface expansion."
-dependencies:
-- "dns.js"
-- "async"
-parameters:
-- name: "domain"
-type: "string"
-required: true
-description: "The root domain to enumerate."
-- name: "wordlist"
-type: "string"
-required: false
-default: "default_wordlist.txt"
-description: "Path to a custom wordlist file."
-output:
-- "A list of discovered subdomains."
-- "A JSON file detailing the discovery source."
-- id: "vulnerability-scanner"
-name: "Vulnerability Scanner"
-description: "A lightweight scanner to check for common vulnerabilities on a target URL."
-status: "Planned"
-purpose:
-- "Automate initial vulnerability checks."
-- "Prioritize high-impact targets for manual review."
-dependencies:
-- "axios"
-- "cheerio"
-parameters:
-- name: "url"
-type: "string"
-required: true
-description: "The target URL to scan."
-output:
-- "A report listing potential vulnerabilities (e.g., outdated headers, XSS)."
-- "A risk score from 1-10."
+  - id: "subdomain-enumerator"
+    name: "Subdomain Enumeration Tool"
+    description: "A tool to discover subdomains for a given root domain using brute-force and OSINT."
+    status: "In Development"
+    purpose:
+      - "Discover hidden assets."
+      - "Identify attack surface expansion."
+    dependencies:
+      - "dns.js"
+      - "async"
+    parameters:
+      - name: "domain"
+        type: "string"
+        required: true
+        description: "The root domain to enumerate."
+      - name: "wordlist"
+        type: "string"
+        required: false
+        default: "default_wordlist.txt"
+        description: "Path to a custom wordlist file."
+    output:
+      - "A list of discovered subdomains."
+      - "A JSON file detailing the discovery source."
+    
+  - id: "vulnerability-scanner"
+    name: "Vulnerability Scanner"
+    description: "A lightweight scanner to check for common vulnerabilities on a target URL."
+    status: "Planned"
+    purpose:
+      - "Automate initial vulnerability checks."
+      - "Prioritize high-impact targets for manual review."
+    dependencies:
+      - "axios"
+      - "cheerio"
+    parameters:
+      - name: "url"
+        type: "string"
+        required: true
+        description: "The target URL to scan."
+    output:
+      - "A report listing potential vulnerabilities (e.g., outdated headers, XSS)."
+      - "A risk score from 1-10."
+
 ---
-# Phase II: Automated Analysis and Reporting 🤖
+phase: "Phase II: Automated Analysis and Reporting 🤖"
 tools:
-- id: "recon-data-aggregator"
-name: "Reconnaissance Data Aggregator"
-description: "A tool to collect and normalize data from various reconnaissance sources into a single, structured database."
-status: "Planned"
-purpose:
-- "Provide a single source of truth for all reconnaissance data."
-- "Enable more effective correlation and analysis."
-dependencies:
-- "MongoDB (or another NoSQL DB)"
-- "data-normalization-scripts.js"
-parameters:
-- name: "source_data"
-type: "array"
-required: true
-description: "An array of reconnaissance data sources (e.g., subdomain list, open ports)."
-output:
-- "A populated database with normalized data."
-- id: "exploit-suggester"
-name: "Exploit Suggester"
-description: "An AI-powered tool that analyzes vulnerability reports and suggests potential exploits or attack vectors."
-status: "In Development"
-purpose:
-- "Accelerate the exploitation phase of bug bounty hunting."
-- "Provide guidance to junior team members."
-dependencies:
-- "LLM API integration (e.g., Gemini, GPT)"
-- "internal knowledge base"
-parameters:
-- name: "vulnerability_report"
-type: "string"
-required: true
-description: "A detailed report of a discovered vulnerability."
-output:
-- "A list of suggested exploits with a confidence score."
-- "Step-by-step instructions for manual verification."
-- id: "report-generator"
-name: "Report Generator"
-description: "A tool to automatically draft professional bug bounty reports from raw data, including screenshots and technical details."
-status: "Planned"
-purpose:
-- "Streamline the reporting process."
-- "Ensure consistency and professionalism in submitted reports."
-dependencies:
-- "puppeteer (or other browser automation tool)"
-- "markdown-generator.js"
-parameters:
-- name: "raw_data"
-type: "object"
-required: true
-description: "Raw vulnerability data (e.g., URL, type, screenshot path, PoC)."
-output:
-- "A formatted Markdown report (.md) file."
-- "A PDF version of the report."
+  - id: "recon-data-aggregator"
+    name: "Reconnaissance Data Aggregator"
+    description: "A tool to collect and normalize data from various reconnaissance sources into a single, structured database."
+    status: "Planned"
+    purpose:
+      - "Provide a single source of truth for all reconnaissance data."
+      - "Enable more effective correlation and analysis."
+    dependencies:
+      - "MongoDB (or another NoSQL DB)"
+      - "data-normalization-scripts.js"
+    parameters:
+      - name: "source_data"
+        type: "array"
+        required: true
+        description: "An array of reconnaissance data sources (e.g., subdomain list, open ports)."
+    output:
+      - "A populated database with normalized data."
+  
+  - id: "exploit-suggester"
+    name: "Exploit Suggester"
+    description: "An AI-powered tool that analyzes vulnerability reports and suggests potential exploits or attack vectors."
+    status: "In Development"
+    purpose:
+      - "Accelerate the exploitation phase of bug bounty hunting."
+      - "Provide guidance to junior team members."
+    dependencies:
+      - "LLM API integration (e.g., Gemini, GPT)"
+      - "internal knowledge base"
+    parameters:
+      - name: "vulnerability_report"
+        type: "string"
+        required: true
+        description: "A detailed report of a discovered vulnerability."
+    output:
+      - "A list of suggested exploits with a confidence score."
+      - "Step-by-step instructions for manual verification."
+
+  - id: "report-generator"
+    name: "Report Generator"
+    description: "A tool to automatically draft professional bug bounty reports from raw data, including screenshots and technical details."
+    status: "Planned"
+    purpose:
+      - "Streamline the reporting process."
+      - "Ensure consistency and professionalism in submitted reports."
+    dependencies:
+      - "puppeteer (or other browser automation tool)"
+      - "markdown-generator.js"
+    parameters:
+      - name: "raw_data"
+        type: "object"
+        required: true
+        description: "Raw vulnerability data (e.g., URL, type, screenshot path, PoC)."
+    output:
+      - "A formatted Markdown report (.md) file."
+      - "A PDF version of the report."
+
 ---
-# Phase III: Agentic Pattern Refinement 🧠
+phase: "Phase III: Agentic Pattern Refinement 🧠"
 tools:
-- id: "agent-pattern-designer"
-name: "Design the New Agent Pattern"
-description: "Design the core agentic loop, defining how tools are chained and how the LLM makes decisions."
-status: "In Development"
-purpose:
-- "Create a robust and flexible framework for autonomous operation."
-dependencies: []
-parameters:
-- name: "tool_specs"
-type: "object"
-required: true
-description: "The tool specification blueprint to reference."
-output:
-- "A detailed flowchart of the agent's logic."
-- "A high-level code plan for the main agent class."
-- id: "llm-evaluator"
-name: "LLM Evaluation and Integration"
-description: "Evaluate different LLMs and integrate the chosen one into the agentic framework."
-status: "Planned"
-purpose:
-- "Select the most cost-effective and capable LLM for the task."
-dependencies: []
-parameters:
-- name: "llm_model"
-type: "string"
-required: true
-description: "The LLM model to evaluate (e.g., 'gemini-pro', 'gpt-4o')."
-output:
-- "A performance and cost analysis report."
-- id: "agent-trainer"
-name: "Train the Agent"
-description: "Train the agent on an internal dataset of bug reports and successful exploits."
-status: "Planned"
-purpose:
-- "Improve the agent's decision-making and tool-use capabilities."
-dependencies:
-- "curated dataset"
-parameters:
-- name: "training_data"
-type: "array"
-required: true
-description: "The dataset for fine-tuning or training."
-output:
-- "A fine-tuned or newly trained agent model."
+  - id: "agent-pattern-designer"
+    name: "Design the New Agent Pattern"
+    description: "Design the core agentic loop, defining how tools are chained and how the LLM makes decisions."
+    status: "In Development"
+    purpose:
+      - "Create a robust and flexible framework for autonomous operation."
+    dependencies: []
+    parameters:
+      - name: "tool_specs"
+        type: "object"
+        required: true
+        description: "The tool specification blueprint to reference."
+    output:
+      - "A detailed flowchart of the agent's logic."
+      - "A high-level code plan for the main agent class."
+
+  - id: "llm-evaluator"
+    name: "LLM Evaluation and Integration"
+    description: "Evaluate different LLMs and integrate the chosen one into the agentic framework."
+    status: "Planned"
+    purpose:
+      - "Select the most cost-effective and capable LLM for the task."
+    dependencies: []
+    parameters:
+      - name: "llm_model"
+        type: "string"
+        required: true
+        description: "The LLM model to evaluate (e.g., 'gemini-pro', 'gpt-4o')."
+    output:
+      - "A performance and cost analysis report."
+
+  - id: "agent-trainer"
+    name: "Train the Agent"
+    description: "Train the agent on an internal dataset of bug reports and successful exploits."
+    status: "Planned"
+    purpose:
+      - "Improve the agent's decision-making and tool-use capabilities."
+    dependencies:
+      - "curated dataset"
+    parameters:
+      - name: "training_data"
+        type: "array"
+        required: true
+        description: "The dataset for fine-tuning or training."
+    output:
+      - "A fine-tuned or newly trained agent model."
+
 ---
-# Phase IV: Building the Test Environment 📊
+phase: "Phase IV: Building the Test Environment 📊"
 tools:
-- id: "challenge-dataset"
-name: "Curate a Challenge Dataset"
-description: "Create a diverse dataset of vulnerable applications and websites for testing."
-status: "Planned"
-purpose:
-- "Provide a realistic and controlled environment for benchmarking."
-dependencies: []
-parameters:
-- name: "dataset_size"
-type: "number"
-required: false
-default: 100
-description: "The number of unique challenges to include in the dataset."
-output:
-- "A list of challenge URLs with known vulnerabilities."
-- id: "test-environment-setup"
-name: "Set Up a Controlled Test Environment"
-description: "Deploy the challenge dataset in a secure, isolated environment."
-status: "Planned"
-purpose:
-- "Prevent illegal activity and ensure ethical testing."
-dependencies:
-- "Docker"
-- "Kubernetes"
-parameters:
-- name: "environment_size"
-type: "string"
-required: false
-description: "The scale of the deployment (e.g., 'small', 'medium', 'large')."
-output:
-- "A running, secure test environment."
-- id: "benchmark-runner"
-name: "Conduct Benchmarks"
-description: "Run automated tests against the challenge dataset and collect performance metrics."
-status: "Planned"
-purpose:
-- "Measure the agent's effectiveness and identify areas for improvement."
-dependencies: []
-parameters:
-- name: "test_suite"
-type: "string"
-required: true
-description: "The specific test suite to run."
-output:
-- "A final benchmark report with key performance indicators."
-```json
-{
-"tools": [
-{
-"id": "subdomain-enumerator",
-"name": "Subdomain Enumeration Tool",
-"description": "A tool to discover subdomains for a given root domain using brute-force and OSINT.",
-"status": "In Development",
-"purpose": [
-"Discover hidden assets.",
-"Identify attack surface expansion."
-],
-"dependencies": [
-"dns.js",
-"async"
-],
-"parameters": [
-{
-"name": "domain",
-"type": "string",
-"required": true,
-"description": "The root domain to enumerate."
-},
-{
-"name": "wordlist",
-"type": "string",
-"required": false,
-"default": "default_wordlist.txt",
-"description": "Path to a custom wordlist file."
-}
-],
-"output": [
-"A list of discovered subdomains.",
-"A JSON file detailing the discovery source."
-]
-},
-{
-"id": "vulnerability-scanner",
-"name": "Vulnerability Scanner",
-"description": "A lightweight scanner to check for common vulnerabilities on a target URL.",
-"status": "Planned",
-"purpose": [
-"Automate initial vulnerability checks.",
-"Prioritize high-impact targets for manual review."
-],
-"dependencies": [
-"axios",
-"cheerio"
-],
-"parameters": [
-{
-"name": "url",
-"type": "string",
-"required": true,
-"description": "The target URL to scan."
-}
-],
-"output": [
-"A report listing potential vulnerabilities (e.g., outdated headers, XSS).",
-"A risk score from 1-10."
-]
-},
-{
-"id": "recon-data-aggregator",
-"name": "Reconnaissance Data Aggregator",
-"description": "A tool to collect and normalize data from various reconnaissance sources into a single, structured database.",
-"status": "Planned",
-"purpose": [
-"Provide a single source of truth for all reconnaissance data.",
-"Enable more effective correlation and analysis."
-],
-"dependencies": [
-"MongoDB (or another NoSQL DB)",
-"data-normalization-scripts.js"
-],
-"parameters": [
-{
-"name": "source_data",
-"type": "array",
-"required": true,
-"description": "An array of reconnaissance data sources (e.g., subdomain list, open ports)."
-}
-],
-"output": [
-"A populated database with normalized data."
-]
-},
-{
-"id": "exploit-suggester",
-"name": "Exploit Suggester",
-"description": "An AI-powered tool that analyzes vulnerability reports and suggests potential exploits or attack vectors.",
-"status": "In Development",
-"purpose": [
-"Accelerate the exploitation phase of bug bounty hunting.",
-"Provide guidance to junior team members."
-],
-"dependencies": [
-"LLM API integration (e.g., Gemini, GPT)",
-"internal knowledge base"
-],
-"parameters": [
-{
-"name": "vulnerability_report",
-"type": "string",
-"required": true,
-"description": "A detailed report of a discovered vulnerability."
-}
-],
-"output": [
-"A list of suggested exploits with a confidence score.",
-"Step-by-step instructions for manual verification."
-]
-},
-{
-"id": "report-generator",
-"name": "Report Generator",
-"description": "A tool to automatically draft professional bug bounty reports from raw data, including screenshots and technical details.",
-"status": "Planned",
-"purpose": [
-"Streamline the reporting process.",
-"Ensure consistency and professionalism in submitted reports."
-],
-"dependencies": [
-"puppeteer (or other browser automation tool)",
-"markdown-generator.js"
-],
-"parameters": [
-{
-"name": "raw_data",
-"type": "object",
-"required": true,
-"description": "Raw vulnerability data (e.g., URL, type, screenshot path, PoC)."
-}
-],
-"output": [
-"A formatted Markdown report (.md) file.",
-"A PDF version of the report."
-]
-},
-{
-"id": "agent-pattern-designer",
-"name": "Design the New Agent Pattern",
-"description": "Design the core agentic loop, defining how tools are chained and how the LLM makes decisions.",
-"status": "In Development",
-"purpose": [
-"Create a robust and flexible framework for autonomous operation."
-],
-"dependencies": [],
-"parameters": [
-{
-"name": "tool_specs",
-"type": "object",
-"required": true,
-"description": "The tool specification blueprint to reference."
-}
-],
-"output": [
-"A detailed flowchart of the agent's logic.",
-"A high-level code plan for the main agent class."
-]
-},
-{
-"id": "llm-evaluator",
-"name": "LLM Evaluation and Integration",
-"description": "Evaluate different LLMs and integrate the chosen one into the agentic framework.",
-"status": "Planned",
-"purpose": [
-"Select the most cost-effective and capable LLM for the task."
-],
-"dependencies": [],
-"parameters": [
-{
-"name": "llm_model",
-"type": "string",
-"required": true,
-"description": "The LLM model to evaluate (e.g., 'gemini-pro', 'gpt-4o')."
-}
-],
-"output": [
-"A performance and cost analysis report."
-]
-},
-{
-"id": "agent-trainer",
-"name": "Train the Agent",
-"description": "Train the agent on an internal dataset of bug reports and successful exploits.",
-"status": "Planned",
-"purpose": [
-"Improve the agent's decision-making and tool-use capabilities."
-],
-"dependencies": [
-"curated dataset"
-],
-"parameters": [
-{
-"name": "training_data",
-"type": "array",
-"required": true,
-"description": "The dataset for fine-tuning or training."
-}
-],
-"output": [
-"A fine-tuned or newly trained agent model."
-]
-},
-{
-"id": "challenge-dataset",
-"name": "Curate a Challenge Dataset",
-"description": "Create a diverse dataset of vulnerable applications and websites for testing.",
-"status": "Planned",
-"purpose": [
-"Provide a realistic and controlled environment for benchmarking."
-],
-"dependencies": [],
-"parameters": [
-{
-"name": "dataset_size",
-"type": "number",
-"required": false,
-"default": 100,
-"description": "The number of unique challenges to include in the dataset."
-}
-],
-"output": [
-"A list of challenge URLs with known vulnerabilities."
-]
-},
-{
-"id": "test-environment-setup",
-"name": "Set Up a Controlled Test Environment",
-"description": "Deploy the challenge dataset in a secure, isolated environment.",
-"status": "Planned",
-"purpose": [
-"Prevent illegal activity and ensure ethical testing."
-],
-"dependencies": [
-"Docker",
-"Kubernetes"
-],
-"parameters": [
-{
-"name": "environment_size",
-"type": "string",
-"required": false,
-"description": "The scale of the deployment (e.g., 'small', 'medium', 'large')."
-}
-],
-"output": [
-"A running, secure test environment."
-]
-},
-{
-"id": "benchmark-runner",
-"name": "Conduct Benchmarks",
-"description": "Run automated tests against the challenge dataset and collect performance metrics.",
-"status": "Planned",
-"purpose": [
-"Measure the agent's effectiveness and identify areas for improvement."
-],
-"dependencies": [],
-"parameters": [
-{
-"name": "test_suite",
-"type": "string",
-"required": true,
-"description": "The specific test suite to run."
-}
-],
-"output": [
-"A final benchmark report with key performance indicators."
-]
-}
-]
-}
+  - id: "challenge-dataset"
+    name: "Curate a Challenge Dataset"
+    description: "Create a diverse dataset of vulnerable applications and websites for testing."
+    status: "Planned"
+    purpose:
+      - "Provide a realistic and controlled environment for benchmarking."
+    dependencies: []
+    parameters:
+      - name: "dataset_size"
+        type: "number"
+        required: false
+        default: 100
+        description: "The number of unique challenges to include in the dataset."
+    output:
+      - "A list of challenge URLs with known vulnerabilities."
+
+  - id: "test-environment-setup"
+    name: "Set Up a Controlled Test Environment"
+    description: "Deploy the challenge dataset in a secure, isolated environment."
+    status: "Planned"
+    purpose:
+      - "Prevent illegal activity and ensure ethical testing."
+    dependencies:
+      - "Docker"
+      - "Kubernetes"
+    parameters:
+      - name: "environment_size"
+        type: "string"
+        required: false
+        description: "The scale of the deployment (e.g., 'small', 'medium', 'large')."
+    output:
+      - "A running, secure test environment."
+
+  - id: "benchmark-runner"
+    name: "Conduct Benchmarks"
+    description: "Run automated tests against the challenge dataset and collect performance metrics."
+    status: "Planned"
+    purpose:
+      - "Measure the agent's effectiveness and identify areas for improvement."
+    dependencies: []
+    parameters:
+      - name: "test_suite"
+        type: "string"
+        required: true
+        description: "The specific test suite to run."
+    output:
+      - "A final benchmark report with key performance indicators."

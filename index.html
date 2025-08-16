@@ -11,6 +11,14 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .ai-output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0d0d0d;
+            border-left: 4px solid #64ffda;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-4 sm:p-8">
@@ -38,6 +46,9 @@
             <h2 class="text-xl sm:text-2xl font-semibold mb-6 text-emerald-400">Milestones & Tools</h2>
         </div>
 
+        <!-- AI Output Section -->
+        <div id="ai-output" class="ai-output hidden"></div>
+
     </div>
 
     <script>
@@ -45,6 +56,7 @@
         window.onload = function() {
             // URL to fetch data from your GitHub repository.
             const githubYamlUrl = 'https://raw.githubusercontent.com/frostyfucker/mp2/main/tools.yml';
+            const aiOutputDiv = document.getElementById('ai-output');
 
             // Function to fetch YAML data from GitHub and render the dashboard.
             async function fetchAndRenderDashboard() {
@@ -77,7 +89,6 @@
                     // Iterate through the raw YAML data to find all tools and their statuses.
                     data.forEach(document => {
                         if (document && document.tools && document.phase) {
-                            
                             document.tools.forEach(tool => {
                                 totalTools++;
                                 if (tool.status === "In Development" || tool.status === "In Testing") {
@@ -131,24 +142,79 @@
                                 statusIcon = '📝';
                             }
 
-                            toolCard.className = `bg-gray-700 p-4 rounded-lg mb-4 shadow-md`;
+                            toolCard.className = `bg-gray-700 p-4 rounded-lg mb-4 shadow-md flex items-start gap-4`;
                             toolCard.innerHTML = `
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="text-lg font-semibold text-gray-100">${tool.name}</h4>
-                                    <span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColor}">${statusIcon} ${tool.status}</span>
+                                <input type="checkbox" id="${tool.id}" class="h-6 w-6 rounded-md bg-gray-600 border border-gray-500 appearance-none checked:bg-green-500 checked:border-transparent cursor-pointer relative top-1 transition-colors duration-200 ease-in-out" data-tool-name="${tool.name}" data-tool-description="${tool.description}">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label for="${tool.id}" class="text-lg font-semibold text-gray-100 cursor-pointer">${tool.name}</label>
+                                        <span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColor}">${statusIcon} ${tool.status}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-2">${tool.description}</p>
+                                    <p class="text-xs text-gray-500">ID: ${tool.id}</p>
                                 </div>
-                                <p class="text-sm text-gray-400 mb-2">${tool.description}</p>
-                                <p class="text-xs text-gray-500">ID: ${tool.id}</p>
                             `;
                             phaseSection.appendChild(toolCard);
                         });
 
                         milestonesContainer.appendChild(phaseSection);
                     }
+                    
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', (event) => {
+                            const toolName = event.target.dataset.toolName;
+                            const toolDescription = event.target.dataset.toolDescription;
+                            if (event.target.checked) {
+                                generateAIContent(toolName, toolDescription);
+                            } else {
+                                aiOutputDiv.classList.add('hidden');
+                                aiOutputDiv.textContent = '';
+                            }
+                        });
+                    });
+
                 } catch (error) {
                     // Display an error message with details if the YAML parsing or fetching fails.
                     document.getElementById('milestones').innerHTML = `<p class="text-red-500">Error parsing project data. <br><br><b>Error:</b> ${error.message}</p>`;
                     console.error("Fetching/Parsing Error:", error);
+                }
+            }
+            
+            async function generateAIContent(toolName, toolDescription) {
+                aiOutputDiv.classList.remove('hidden');
+                aiOutputDiv.textContent = `Generating a plan for: ${toolName}...`;
+                
+                let chatHistory = [];
+                const prompt = `Provide a brief, actionable next step for the project task: "${toolName}". The description of the task is "${toolDescription}". Focus on a very specific, technical action a developer should take. Be direct and concise.`;
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = {
+                    contents: chatHistory
+                };
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        aiOutputDiv.textContent = text;
+                    } else {
+                        aiOutputDiv.textContent = `Error: No content generated.`;
+                    }
+                } catch (error) {
+                    console.error("API Call Error:", error);
+                    aiOutputDiv.textContent = `API call failed. Please check the network connection.`;
                 }
             }
 
